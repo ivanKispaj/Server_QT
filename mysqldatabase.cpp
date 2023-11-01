@@ -297,7 +297,9 @@ QJsonObject MysqlDataBase::getMessageById(int id)
             obj["recipient_id"] = query.value("recipient_id").toInt();
             obj["date"] = query.value("date").toString();
         }
+        delete db;
     }
+    disconnecting(dbConnectName);
     return obj;
 }
 
@@ -336,6 +338,50 @@ QJsonArray MysqlDataBase::getAllMessages(MessagesType type)
             message["date"] = query.value("date").toString();
             messages.append(message);
         }
+        delete db;
     }
+    disconnecting(dbConnectName);
     return messages;
+}
+
+void MysqlDataBase::createDefaultTable()
+{
+    QString dbConnectName = "createDefaultTable";
+    if (auto db = connecting(dbConnectName))
+    {
+        QSqlQuery query(*db);
+        QString queryStr{"CREATE TABLE IF NOT EXISTS users (\
+        id int NOT NULL AUTO_INCREMENT,\
+        name varchar(50) NOT NULL, \
+        login varchar(50) NOT NULL,\
+        isAdmin tinyint(1) DEFAULT NULL,\
+        isDeleted tinyint(1) DEFAULT NULL,\
+        isBanned tinyint(1) DEFAULT NULL,\
+        PRIMARY KEY (id),\
+        UNIQUE KEY login (login)\
+         ) ENGINE=InnoDB"};
+
+        query.exec(queryStr);
+        queryStr = "CREATE TABLE IF NOT EXISTS users_pass (\
+                    users_id int DEFAULT NULL,\
+                    user_pass varchar(255) DEFAULT NULL,\
+                    KEY users_id (users_id),\
+                    CONSTRAINT users_pass_ibfk_1 FOREIGN KEY (users_id) REFERENCES users (id) ON DELETE CASCADE\
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+        query.exec(queryStr);
+
+        queryStr = "CREATE TABLE IF NOT EXISTS messages (\
+                id int NOT NULL AUTO_INCREMENT,\
+                message varchar(255) DEFAULT NULL,\
+                isPrivate tinyint(1) DEFAULT NULL,\
+                author_id int NOT NULL,\
+                recipient_id int DEFAULT NULL,\
+                date timestamp NOT NULL,\
+                PRIMARY KEY (id),\
+                CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`)\
+                ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+        query.exec(queryStr);
+        delete db;
+    }
+    disconnecting(dbConnectName);
 }

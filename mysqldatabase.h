@@ -40,5 +40,6 @@ public:
     QJsonObject getMessageById(int id);
     QJsonArray getAllMessages(MessagesType type);
 
+    void createDefaultTable();
 };
 

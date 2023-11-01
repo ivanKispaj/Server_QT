@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
         QTimer::singleShot(1, qApp, &QCoreApplication::quit);
     }
     QTimer::singleShot(0, this, &MainWindow::on_startServer_clicked);
+
 }
 
 MainWindow::~MainWindow()
