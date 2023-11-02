@@ -4,7 +4,8 @@ project(ChatServer)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
 if(APPLE)
 set(Qt6_LUPDATE_EXECUTABLE "/usr/local/Cellar/qt/6.5.2/bin/lupdate")
 endif()
