@@ -178,12 +178,13 @@ void TCPServer::processData(QTcpSocket *socket, int command, const QJsonObject &
         user.decodeFromJson(userObj);
         User *authUser = db->authentificate(user);
         QJsonObject request;
+        request["auth_state"] = false;
         if (authUser)
         {
             if (!authUser->isDeleted())
             {
                 request["user"] = authUser->encodeToJson();
-                request.insert("auth_state", true);
+                request["auth_state"] = true;
                 delete authUser;
             }
         }

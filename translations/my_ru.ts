@@ -189,7 +189,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="18"/>
+        <location filename="../main.cpp" line="31"/>
         <source>ChatServer</source>
         <translation>Сервер чата</translation>
     </message>
@@ -202,7 +202,7 @@
         <translation>Клиент отключен</translation>
     </message>
     <message>
-        <location filename="../TCPServer.cpp" line="213"/>
+        <location filename="../TCPServer.cpp" line="214"/>
         <source>connect client </source>
         <translation>Клиент подклбчен </translation>
     </message>
