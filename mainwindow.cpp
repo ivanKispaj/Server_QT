@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "./ui_mainwindow.h"
+#include "ui_mainwindow.h"
 #include "dbconfiguratation.h"
 #include "Constants.h"
 #include <QMessageBox>
@@ -35,7 +35,10 @@ void MainWindow::on_startServer_clicked()
     {
         startServer();
         _server = new TCPServer();
-        connect(_server, &TCPServer::updateUI, this, &MainWindow::updateLabel);
+        if (_server != nullptr)
+        {
+            connect(_server, &TCPServer::updateUI, this, &MainWindow::updateLabel);
+        }
         if (_server->isConnected())
         {
             ui->startServer->setStyleSheet("QPushButton {"
@@ -55,8 +58,9 @@ void MainWindow::on_startServer_clicked()
 void MainWindow::on_stopServer_clicked()
 {
 
-    if (_server)
+    if (_server != nullptr)
     {
+            disconnect(_server, &TCPServer::updateUI, this, &MainWindow::updateLabel);
         delete _server;
         _server = nullptr;
         ui->startServer->setStyleSheet("");
@@ -124,16 +128,23 @@ void MainWindow::on_actionadministration_triggered()
     this->setEnabled(false);
     AdministrationDB *admin = new AdministrationDB();
     _consoleAdmin = admin;
-    connect(_consoleAdmin, &AdministrationDB::closeWindowAdmin, this, &MainWindow::administrationClose);
+    if (_consoleAdmin != nullptr)
+    {
+        connect(_consoleAdmin, &AdministrationDB::closeWindowAdmin, this, &MainWindow::administrationClose);
+    }
     _consoleAdmin->show();
 }
 
 void MainWindow::administrationClose()
 {
-        this->setEnabled(true);
-        delete _consoleAdmin;
-        _consoleAdmin = nullptr;
-        on_startServer_clicked();
+    if (_consoleAdmin != nullptr)
+    {
+        disconnect(_consoleAdmin, &AdministrationDB::closeWindowAdmin, this, &MainWindow::administrationClose);
+    }
+    this->setEnabled(true);
+    delete _consoleAdmin;
+    _consoleAdmin = nullptr;
+    on_startServer_clicked();
 }
 
 

@@ -29,6 +29,7 @@ void MysqlDataBase::loadDBConnectData()
         _dbUser = QString::fromStdString(user);
         _dbPass = QString::fromStdString(pass);
         _isLoadConnectData = true;
+        createDefaultTable();
     }
 }
 
@@ -41,6 +42,8 @@ QSqlDatabase* MysqlDataBase::connecting(const QString &connectName)
         db->setDatabaseName(_dbName);
         db->setUserName(_dbUser);
         db->setPassword(_dbPass);
+
+
         if (db->open())
         {
             return db;
@@ -62,7 +65,7 @@ bool MysqlDataBase::appendUser(const User &user)
     if (auto db = connecting(dbConnectName))
     {
         QSqlQuery query(*db);
-        query.prepare("INSERT INTO console_chat.users (name, login, isAdmin, isDeleted, isBanned) VALUES(:name, :login, :isAdmin, :isDeleted, :isBannded)");
+        query.prepare("INSERT INTO users (name, login, isAdmin, isDeleted, isBanned) VALUES(:name, :login, :isAdmin, :isDeleted, :isBannded)");
         query.bindValue(":name", user.getUserName());
         query.bindValue(":login", user.getUserLogin());
         query.bindValue(":isAdmin", user.isAdmin());
@@ -82,9 +85,14 @@ bool MysqlDataBase::appendUser(const User &user)
                     result = true;
                 } else
                 {
+                    qDebug() << "rollback and last query error: " << query.lastError();
                     db->rollback();
                 }
             }
+        } else
+        {
+            qDebug() << "rollback and last query error: " << query.lastError();
+            db->rollback();
         }
         delete db;
     }
@@ -198,6 +206,7 @@ bool MysqlDataBase::updateUser(const User &user)
 User *MysqlDataBase::authentificate(const User &user)
 {
     QString dbConnectName = "addedUser";
+    User *retUser{nullptr};
     if (auto db = connecting(dbConnectName))
     {
         QSqlQuery query(*db);
@@ -207,25 +216,25 @@ User *MysqlDataBase::authentificate(const User &user)
         query.exec();
         if (query.next())
         {
-            User *user = new User();
-            user->setUserID(query.value("id").toInt());
-            user->setUserLogin(query.value("login").toString());
-            user->setUserName(query.value("name").toString());
-            user->setIsAdmin(query.value("isAdmin").toBool());
-            user->setIsBanned(query.value("isBanned").toBool());
-            user->setIsDeleted(query.value("isDeleted").toBool());
+            retUser = new User();
+            retUser->setUserID(query.value("id").toInt());
+            retUser->setUserLogin(query.value("login").toString());
+            retUser->setUserName(query.value("name").toString());
+            retUser->setIsAdmin(query.value("isAdmin").toBool());
+            retUser->setIsBanned(query.value("isBanned").toBool());
+            retUser->setIsDeleted(query.value("isDeleted").toBool());
             disconnecting(dbConnectName);
-            QSqlDatabase::removeDatabase(dbConnectName);
-            delete db;
-            return user;
+        } else
+        {
+            qDebug() << "Failed to prepare query:" << query.lastError().text();
         }
-        qDebug() << "Failed to prepare query:" << query.lastError().text();
-        disconnecting(dbConnectName);
-        QSqlDatabase::removeDatabase(dbConnectName);
         delete db;
+    } else
+    {
+        qDebug() << "db dont connect: " << user.getUserLogin();
     }
-
-    return nullptr;
+    disconnecting(dbConnectName);
+    return retUser;
 
 }
 
@@ -246,7 +255,6 @@ int MysqlDataBase::appendMessage( Message &message)
             result = query.lastInsertId().toInt();
         } else
         {
-            qDebug() << "Last query: " << query.lastQuery();
             qDebug() << "Last query error: " << query.lastError();
 
         }

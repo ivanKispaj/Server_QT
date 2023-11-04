@@ -8,7 +8,7 @@
 
 #include <string>
 #include <sstream>
-
+#include <memory.h>
 typedef unsigned int uint;
 
 class EncodePassword

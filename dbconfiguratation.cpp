@@ -5,7 +5,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
-//#include "RequestCore.h"
+
 
 DBConfiguratation::DBConfiguratation(QWidget *parent) :
     QDialog(parent),

@@ -9,6 +9,9 @@
 #include "User.h"
 #include "EncodePassword.h"
 #include <string>
+#include <QString>
+#include <QByteArray>
+#include <QJsonObject>
 
 User::User(const QString &name, const QString&login, const QString &pass) : _name(name), _login(login)
 {

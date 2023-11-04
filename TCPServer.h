@@ -42,7 +42,7 @@ signals:
 
 private:
     int _port = 45000;
-    QHostAddress _host = QHostAddress("localhost");
+    QHostAddress _host = QHostAddress::Any;
     QList<QTcpSocket*> _clientConnections;
 
     /**

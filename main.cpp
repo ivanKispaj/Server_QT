@@ -1,8 +1,6 @@
 #include "mainwindow.h"
-
 #include <QApplication>
 #include <QTranslator>
-#include "mysqldatabase.h"
 #include <filesystem>
 #include <QMessageBox>
 
@@ -12,9 +10,10 @@ int main(int argc, char *argv[])
 
     MysqlDataBase *db = new MysqlDataBase();
     db->createDefaultTable();
-    delete db;
     QApplication a(argc, argv);
     QTranslator translator;
+
+
     std::filesystem::path currentPath = std::filesystem::current_path();
     std::string path = currentPath;
     if (!translator.load("Server_translations/my_ru.qm"))
@@ -29,6 +28,7 @@ int main(int argc, char *argv[])
     }
     MainWindow w;
     w.setWindowTitle(QObject::tr("ChatServer"));
+    delete db;
     w.show();
     return a.exec();
 }
