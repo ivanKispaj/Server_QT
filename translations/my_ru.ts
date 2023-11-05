@@ -189,7 +189,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="30"/>
+        <location filename="../main.cpp" line="24"/>
         <source>ChatServer</source>
         <translation type="unfinished"></translation>
     </message>

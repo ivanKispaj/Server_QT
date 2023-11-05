@@ -32,7 +32,7 @@ void DBConfiguratation::on_dbConfigActionBox_accepted()
     {
         std::string filePath = (Constants::dir.baseDIR + Constants::dir.dataDIR + Constants::dir.configFileName);
 
-        FileManager::File file ("dbconf.config",FileManager::save,true,false);
+        FileManager::File file (filePath,FileManager::save,true,false);
         std::string host = "host = \"" + ui->dbHostTextField->text().toStdString() + "\"";
         std::string dbName = "dataBaseName = \"" + ui->dbNameTextField->text().toStdString() + "\"";
         std::string user = "userLogin = \"" + ui->dbUserTextField->text().toStdString() + "\"";
@@ -83,6 +83,7 @@ void DBConfiguratation::on_testConnectButton_clicked()
         }
         else
         {
+            qDebug() << "Ошибка открытия базы данных:" << db->lastError().text();
             this->ui->connectionStatusCheck->setCheckState(Qt::Unchecked);
             this->ui->connectionStatusCheck->setStyleSheet("#connectionStatusCheck {background-color:  rgba(236, 80, 58, 200)}");
         }
@@ -98,7 +99,7 @@ void DBConfiguratation::configureUI(const QString &text)
 
     if (std::filesystem::exists(filePath))
     {
-        FileManager::File file ("dbconf.config",FileManager::load,false,false);
+        FileManager::File file (filePath,FileManager::load,false,false);
         std::string dataBaseName;
         std::string host;
         std::string user;

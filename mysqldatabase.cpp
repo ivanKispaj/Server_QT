@@ -15,7 +15,7 @@ void MysqlDataBase::loadDBConnectData()
     std::string filePath = (Constants::dir.baseDIR + Constants::dir.dataDIR + Constants::dir.configFileName);
     if (std::filesystem::exists(filePath) && !_isLoadConnectData)
     {
-        FileManager::File file ("dbconf.config",FileManager::load,false,false);
+        FileManager::File file (filePath,FileManager::load,false,false);
         std::string dataBaseName;
         std::string host;
         std::string user;
