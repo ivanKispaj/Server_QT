@@ -202,7 +202,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../TCPServer.cpp" line="214"/>
+        <location filename="../TCPServer.cpp" line="238"/>
         <source>connect client </source>
         <translation type="unfinished"></translation>
     </message>

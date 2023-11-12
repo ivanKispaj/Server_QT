@@ -205,7 +205,7 @@ bool MysqlDataBase::updateUser(const User &user)
 
 User *MysqlDataBase::authentificate(const User &user)
 {
-    QString dbConnectName = "addedUser";
+    QString dbConnectName = "authentificate";
     User *retUser{nullptr};
     if (auto db = connecting(dbConnectName))
     {
@@ -223,7 +223,6 @@ User *MysqlDataBase::authentificate(const User &user)
             retUser->setIsAdmin(query.value("isAdmin").toBool());
             retUser->setIsBanned(query.value("isBanned").toBool());
             retUser->setIsDeleted(query.value("isDeleted").toBool());
-            disconnecting(dbConnectName);
         } else
         {
             qDebug() << "Failed to prepare query:" << query.lastError().text();

@@ -62,16 +62,29 @@ void TCPServer::processData(QTcpSocket *socket, int command, const QJsonObject &
         User *addeduser = db->getUserByLogin(user.getUserLogin());
         QJsonObject request;
         request["auth_state"] = false;
+        request["state"] = false;
         if (addeduser)
         {
             request["user"] = addeduser->encodeToJson();
             request.insert("auth_state", true);
+            request["state"] = true;
             delete addeduser;
         }
         QJsonDocument doc(request);
         QByteArray dat = doc.toJson();
         socket->write(dat);
         socket->waitForBytesWritten();
+        QList<QTcpSocket*>::iterator it;
+        for (it = _clientConnections.begin(); it != _clientConnections.end(); ++it) {
+
+            QTcpSocket *sock = *it;
+            if  (sock != socket)
+            {
+                sock->write(dat);
+                sock->waitForBytesWritten();
+            }
+
+        }
     }
     break;
     case ADD_MESSAGE:
@@ -97,8 +110,15 @@ void TCPServer::processData(QTcpSocket *socket, int command, const QJsonObject &
         }
         QJsonDocument doc(request);
         QByteArray dat = doc.toJson();
-        socket->write(dat);
-        socket->waitForBytesWritten();
+
+        QList<QTcpSocket*>::iterator it;
+        for (it = _clientConnections.begin(); it != _clientConnections.end(); ++it) {
+
+            QTcpSocket *sock = *it;
+            sock->write(dat);
+            sock->waitForBytesWritten();
+        }
+
     }
     break;
     case IS_UNIQUE_LOGIN:
@@ -117,7 +137,9 @@ void TCPServer::processData(QTcpSocket *socket, int command, const QJsonObject &
             sendData["users"] = users;
         }
         QJsonDocument doc(sendData);
-        socket->write(doc.toJson());
+        QByteArray dat = doc.toJson();
+        qDebug() << "id: " << socket->socketDescriptor();
+        socket->write(dat);
         socket->waitForBytesWritten();
     }
     break;
@@ -142,7 +164,8 @@ void TCPServer::processData(QTcpSocket *socket, int command, const QJsonObject &
             sendData["p_messages"] = messages;
         }
         QJsonDocument doc(sendData);
-        socket->write(doc.toJson());
+        QByteArray dat = doc.toJson();
+        socket->write(dat);
         socket->waitForBytesWritten();
     }
     break;
@@ -167,6 +190,7 @@ void TCPServer::processData(QTcpSocket *socket, int command, const QJsonObject &
             sendData["messages"] = messages;
         }
         QJsonDocument doc(sendData);
+
         socket->write(doc.toJson());
         socket->waitForBytesWritten();
     }
